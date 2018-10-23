@@ -18,22 +18,28 @@ class WebhookController < ApplicationController
       head 470
     end
 
+    reply_message = {
+      type: 'text',
+      text: "違います。"
+    }
     events = client.parse_events_from(body)
     events.each { |event|
       case event
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          message = {
+          #message from user
+          user_message = {
             type: 'text',
             text: event.message['text']
           }
-          client.reply_message(event['replyToken'], message)
-        when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
-          response = client.get_message_content(event.message['id'])
-          tf = Tempfile.open("content")
-          tf.write(response.body)
+          
+          #reply to user
+          if user_message[:text].match(/^http(s|):\/\/.*\.(png|jpg|gif)$/)
+            reply_message[:text] = "画像です。"
+          end                
         end
+        client.reply_message(event['replyToken'], reply_message)
       end
     }
     head :ok

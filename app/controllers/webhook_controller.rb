@@ -2,6 +2,8 @@ require 'line/bot'
 require 'net/http' 
 require 'uri'
 require "json" 
+require 'faraday'
+
 
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
@@ -40,23 +42,22 @@ class WebhookController < ApplicationController
           #reply to user
           if user_message[:text].match(/^http(s|):\/\/.*\.(png|jpg|gif)$/)
             #Using WATSON API for image recognition
-            puts "-------------------------------"
-            puts system("curl -u \"apikey:mJKpbO7JGGOL1QyAIrDsSPA0gpURtcTHarLRPVR6gFB0\" \
-            \"https://gateway.watsonplatform.net/visual-recognition/api/v3/classify?\
-            url=https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_2.jpg/1920px-Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_2.jpg\
-            &version=2018-03-19\"")
-            #puts api_result_get
-            puts "-------------------------------"
-            #api_result_json = JSON.parse(api_result_get)
-            #reply_message = {
-            #  type: 'text',
-            #  text: "この画像のカテゴリーは" + api_result_json["images"][0]["classifiers"][0]["classes"][0]["class"] + \
-            #  "で、類似度は" + (api_result_json["images"][0]["classifiers"][0]["classes"][0]["score"].to_f*100).to_s + "%です。"
-            #}
-            #puts api_result_json[:text] 
+            
+            uri_image = 'https://gateway.watsonplatform.net/visual-recognition/api/v3/classify?url=' + user_message[:text] +'&version=2018-03-19'
+            connection_watson_api = Faraday::Connection.new(:url => uri_image) do |builder|
+                builder.use Faraday::Request::UrlEncoded
+                builder.use Faraday::Request::BasicAuthentication, "apikey", "mJKpbO7JGGOL1QyAIrDsSPA0gpURtcTHarLRPVR6gFB0"
+                builder.use Faraday::Response::Logger
+                builder.use Faraday::Adapter::NetHttp                
+            end
+            response_from_watson_api_text = connection_watson_api.get 
+            response_from_watson_api_json = JSON.parse(response_from_watson_api_text.body)
+            reply_message = {
+              type: 'text',
+              text: "この画像のカテゴリーは" + response_from_watson_api_json["images"][0]["classifiers"][0]["classes"][0]["class"] + \
+              "で、類似度は" + (response_from_watson_api_json["images"][0]["classifiers"][0]["classes"][0]["score"].to_f*100).to_s + "%です。"
+            } 
           end
-          
-
           
         client.reply_message(event['replyToken'], reply_message)
         end
@@ -65,3 +66,5 @@ class WebhookController < ApplicationController
     head :ok
   end
 end
+
+

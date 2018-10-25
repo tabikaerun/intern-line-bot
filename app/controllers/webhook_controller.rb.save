@@ -52,8 +52,7 @@ class WebhookController < ApplicationController
             response_from_watson_api_json = JSON.parse(response_from_watson_api_text.body)["images"][0]["classifiers"][0]["classes"][0]
 
             reply_message = {
-              type: 'text',
-              text: "この画像のカテゴリーは#{response_from_watson_api_json["class"]} \
+              type: 'text',≈XcAZ              text: "この画像のカテゴリーは#{response_from_watson_api_json["class"]} \
               で、類似度は#{(response_from_watson_api_json["score"].to_f*100).to_s}%です。"
             } 
           end          

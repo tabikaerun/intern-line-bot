@@ -5,7 +5,6 @@ ruby '>= 2.3.5', '< 2.6'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails'
 # Use postgresql as the database for Active Record
-#gem 'pg', '~> 0.18'
 gem 'pg', '0.21.0'
 gem 'rails_12factor', group: :production
 # Use SCSS for stylesheets

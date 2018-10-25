@@ -41,8 +41,8 @@ class WebhookController < ApplicationController
           #reply to user
           if user_message[:text].match(/^http(s|):\/\/.*\.(png|jpg|gif)$/)
             #Using WATSON API for image recognition
-            watso_api_uri = 'https://gateway.watsonplatform.net/visual-recognition/api/v3/classify?url=' + user_message[:text] +'&version=2018-03-19'
-            connection_watson_api = Faraday::Connection.new(:url => watso_api_uri) do |builder|
+            watson_api_uri = 'https://gateway.watsonplatform.net/visual-recognition/api/v3/classify?url=' + user_message[:text] +'&version=2018-03-19'
+            connection_watson_api = Faraday::Connection.new(:url => watson_api_uri) do |builder|
                 builder.use Faraday::Request::UrlEncoded
                 builder.use Faraday::Request::BasicAuthentication, "apikey", "mJKpbO7JGGOL1QyAIrDsSPA0gpURtcTHarLRPVR6gFB0"
                 builder.use Faraday::Response::Logger

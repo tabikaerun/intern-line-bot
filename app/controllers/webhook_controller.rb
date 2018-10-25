@@ -56,7 +56,7 @@ class WebhookController < ApplicationController
               text: "この画像のカテゴリーは#{response_from_watson_api_json["class"]} \
               で、類似度は#{(response_from_watson_api_json["score"].to_f*100).to_s}%です。"
             } 
-          end          
+          end
         end
         client.reply_message(event['replyToken'], reply_message)
       end

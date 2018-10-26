@@ -56,6 +56,11 @@ LINE developer コンソールのChannel基本設定から「Channel Secret」�
 $ heroku config:set LINE_CHANNEL_SECRET=*****
 $ heroku config:set LINE_CHANNEL_TOKEN=*****
 ```
+7. WATSON API にアクセスするためにAPI KEYを登録する。
+IBM cloudの自分のアカウントにあるWATSON API　資格情報から　「API鍵」を取得しt、以下の通り設定する。
+```
+$ heroku config:set WATSON_APIKEY=*******
+``````
 
 # LINE Developerコンソールの設定
 LINE DeveloperコンソールのChannel基本設定から、以下を設定。

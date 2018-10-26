@@ -1,4 +1,8 @@
 require 'line/bot'
+require 'uri'
+require "json" 
+require 'faraday'
+
 
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
@@ -36,8 +40,23 @@ class WebhookController < ApplicationController
           
           #reply to user
           if user_message[:text].match(/^http(s|):\/\/.*\.(png|jpg|gif)$/)
-            reply_message[:text] = "画像です。"
-          end                
+            #Using WATSON API for image recognition
+            watson_api_uri = 'https://gateway.watsonplatform.net/visual-recognition/api/v3/classify?url=' + user_message[:text] +'&version=2018-03-19'
+            connection_watson_api = Faraday::Connection.new(:url => watson_api_uri) do |builder|
+                builder.use Faraday::Request::UrlEncoded
+                builder.use Faraday::Request::BasicAuthentication, "apikey", ENV["WATSON_APIKEY"]
+                builder.use Faraday::Response::Logger
+                builder.use Faraday::Adapter::NetHttp                
+            end
+            response_from_watson_api_text = connection_watson_api.get 
+            response_from_watson_api_json = JSON.parse(response_from_watson_api_text.body)["images"][0]["classifiers"][0]["classes"][0]
+
+            reply_message = {
+              type: 'text',
+              text: "この画像のカテゴリーは#{response_from_watson_api_json["class"]} \
+              で、類似度は#{(response_from_watson_api_json["score"].to_f*100).to_s}%です。"
+            } 
+          end
         end
         client.reply_message(event['replyToken'], reply_message)
       end
@@ -45,3 +64,5 @@ class WebhookController < ApplicationController
     head :ok
   end
 end
+
+

@@ -56,6 +56,11 @@ LINE developer コンソールのChannel基本設定から「Channel Secret」�
 $ heroku config:set LINE_CHANNEL_SECRET=*****
 $ heroku config:set LINE_CHANNEL_TOKEN=*****
 ```
+7. WATSON API にアクセスするためにAPI KEYを登録する。
+IBM cloudの自分のアカウントにあるWATSON API　資格情報から　「API鍵」を取得しt、以下の通り設定する。
+```
+$ heroku config:set WATSON_APIKEY=*******
+``````
 
 # LINE Developerコンソールの設定
 LINE DeveloperコンソールのChannel基本設定から、以下を設定。
@@ -82,5 +87,3 @@ $ git push heroku feature/xxxxx:master -f
 # 参考
 ローカル環境構築は[こちら](https://github.com/giftee/intern-line-bot/wiki/%E3%83%AD%E3%83%BC%E3%82%AB%E3%83%AB%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89)
 
-# Gitの練習
-文言を追加してみる
